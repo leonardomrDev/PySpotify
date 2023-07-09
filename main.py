@@ -4,7 +4,7 @@ import spotipy as sp
 import pandas as pd
 from spotipy.oauth2 import SpotifyClientCredentials
 
-# IF YOU DON'T WANT TO HAVE YOUR CLIENT_ID AND CLIENT_SECRET EXPOSED YOU CAN HIDE IT WITHIN YOUR ENV VARIABLES:
+# IF YOU DON'T WANT TO HAVE YOUR CLIENT_ID AND CLIENT_SECRET "EXPOSED" YOU CAN HIDE IT WITHIN YOUR ENV VARIABLES:
 
 # ON WINDOWS: 
 # $env:SPOTIPY_CLIENT_ID=""
@@ -21,10 +21,9 @@ print('Working...')
 start = time.time()
 cpu_start = time.process_time()
 
-client_id="0dc01299ed7c4203a5fd07e1a22c2df8"
-client_secret="598854c46a5d4522b188a1afe884cc79"
+client_id=''
+client_secret=''
 spotify = sp.Spotify(client_credentials_manager=SpotifyClientCredentials(client_id, client_secret))
-#redirect_uri = "https://localhost:8888/callback"
 
 artist = []
 track = []
