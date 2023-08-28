@@ -1,44 +1,63 @@
-# PySpotify Data Engineering Project
+<h1 align="center">
+PySpotify Data Engineering Project
+</h1>
+
 
 <h4 align="center"> 
 :construction: DOCUMENTAÇÃO EM CONSTRUÇÃO :construction:
 </h4>
 
+
 ## Tópicos
 
-Descrição e objetivo do projeto
-Tecnologias
-Infraestrutura Cloud
-Instrução para Execução
-Planejamento do Projeto e Autoria
+- Descrição e Objetivo
 
-## Tecnologias e Autoria
+- Tecnologias
+
+- Infraestrutura Cloud
+
+- Instrução para Execução
+
+- Planejamento do Projeto e Autoria
+
+
+## Descrição e Objetivo
+
+A idéia por trás principal desse projeto é; trabalhar com, e realizar a integração de diversos serviços da AWS que eu não possuia experiência, além de aumentar minha experiência e conhecimentos no desenvolvimento e manutenção de pipelines de ETL em cloud.
+
+Mas não é o único objetivo. Quero ter o processo completo, desde a arquitetura da infraestrutura, o desenvolvimento da mesma, a extração de dados, tratamento, transformação, carregamento, automatização/agendamento, e o mais importante para o projeto ser um sucesso; a apresentação dos dados, ou seja, transformar os dados em informação útil com uma visualização utilizando o PowerBI ou o AWS Quicksight.
+
+**Qual o motivo da escolha de utilizar a API do Spotify?**
+
+Esse projeto foi extremamente importante, para ter a motivação para realizar meus estudos e ter, de fato, essa disciplina de todo dia estudar. Identifiquei que o que faltava para essa motivação era justamente um projeto onde o produto resultante fosse interessante para mim. Então ter essa visão das músicas mais tocadas no spotify, com atualização semanal, é o que trás esse ânimo a mais para estudar.
+
+## Tecnologias
 
 ### Tecnologias utilizadas para o desenvolvimento local:
 
-Python 3.11
-VSCode
-Spotipy
-Pandas
-numpy
-boto3
+- Python 3.11
+- VSCode
+- Spotipy
+- Pandas
+- numpy
+- boto3
 
 ### Tecnologias utilizadas para o desenvolvimento em cloud:
 
-Python 3.7
-Spotipy
-numpy
-Pandas
-boto3
-Amazon Web Services (AWS)
-IAM
-S3
-SecretsManager
-Lambda
-EventBridge
-Glue
-Athena
-QuickSight (Em desenvolvimento) (To-Do)
+- Python 3.7
+- Spotipy
+- numpy
+- Pandas
+- boto3
+- Amazon Web Services (AWS)
+- IAM
+- S3
+- SecretsManager
+- Lambda
+- EventBridge
+- Glue
+- Athena
+- QuickSight (Em desenvolvimento) (To-Do)
 
 É importante ressaltar, antes de apresentar as decisões na arquitetura, que não fazia parte de meu objetivo desenvolver uma infraestrutura "otimizada", como disse anteriormente, o projeto foi para aprender outras ferramentas/serviços que podem e são bastante utilizados em infraestruturas cloud voltada para dados (data driven architecture).
 
@@ -106,11 +125,11 @@ Serviço crucial para realizar a automatização/agendamento da inicialização 
  
 Utilizo o Glue primeiramente para criar um data catalog com as duas tabelas dos arquivos raw (csv), essas duas tabelas são criadas a partir de um crawler com agendamento para rodar todo meio dia, esse crawler coleta os dados disponibilizados no bucket do s3 (spotify-dataops-raw).
 Após isso utilizo o glue para rodar um script python com um ETL Job cujo objetivo é transformar os arquivos raw (csv) em refined (parquet) e deposita-los no bucket s3 (spotify-dataops-refined), por mais que não seja necessário, por não ser um grande volume de dados, o ponto disso é apenas testar e entender como funciona esse processo. Esse ETL também possui um agendamento, ele roda alguns minutos após o crawler que cria o data catalog raw rodar.
-Para finalizar esse processo de transformação em parquet, temos um crawler para coletar os dados refinados do s3 e criar um novo data catalog para os dados parquet e as duas novas tabelas com os dados parquet.
+Para finalizar esse processo de transformação em parquet, temos um crawler que coleta dados refinados do S3 e criar um novo data catalog contendo as tabelas em formato parquet.
 
 ### AWS Athena
 
-Aproveitei essa criação dos data catalogs, pude utilizar-los no Athena, o objetivo o aprendizado e, obviamente, a habilidade de realizar o desenvolvimento de sql queries.
+Com a criação dos data catalog, pude inbegrar o Athena na infraestrutura, para possibilitar a escrita de SQL queries.
 
 ### AWS QuickSight
 
@@ -131,13 +150,13 @@ python -m venv <nome-do-ambiente>
 Esse comando irá criar o nosso ambiente na versão mais recente do python instalado na máquina local.
 
 Com o ambiente criado, deveremos ter o seguinte parentesco do diretório:
-
+´´´
 -> /[pasta-projeto]/
 	-> main.py (os outros .py são dedicados para utilização na AWS)
 	-> requirements.txt
 	-> <nome-da-venv>
 	-> <csvs-gerados>
-
+´´´
 Tendo isso, ou ao menos algo similar, precisamos ainda das bibliotecas. Para facilitar a instalação delas, criei um .txt utilizando o pip freeze contendo todas as libs da minha venv.
 
 Para instalar será necessário estar no diretório do projeto, abrir o cmd e ativar o ambiente virtual, da seguinte maneira:
