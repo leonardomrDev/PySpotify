@@ -127,13 +127,69 @@ Utilizo o Glue primeiramente para criar um data catalog com as duas tabelas dos 
 Após isso utilizo o glue para rodar um script python com um ETL Job cujo objetivo é transformar os arquivos raw (csv) em refined (parquet) e deposita-los no bucket s3 (spotify-dataops-refined), por mais que não seja necessário, por não ser um grande volume de dados, o ponto disso é apenas testar e entender como funciona esse processo. Esse ETL também possui um agendamento, ele roda alguns minutos após o crawler que cria o data catalog raw rodar.
 Para finalizar esse processo de transformação em parquet, temos um crawler que coleta dados refinados do S3 e criar um novo data catalog contendo as tabelas em formato parquet.
 
+Para esse processo de transformação em parquet, utilizamos o seguinte código no ETL Job:
+
+```python
+import sys
+from awsglue.transforms import *
+from awsglue.utils import getResolvedOptions
+from pyspark.context import SparkContext
+from awsglue.context import GlueContext
+from awsglue.job import Job
+
+# Init GlueContext
+args = getResolvedOptions(sys.argv, ["JOB_NAME"])
+sc = SparkContext()
+glueContext = GlueContext(sc)
+spark = glueContext.spark_session
+job = Job(glueContext)
+job.init(args["JOB_NAME"], args)
+
+# Função que irá transformar um .csv para .parquet
+def transform_csv_to_parquet(database, table_name):
+    # Leitura dos dados do Glue DataCatalog
+    data_frame = glueContext.create_dynamic_frame.from_catalog(
+        database=database,
+        table_name=table_name,
+    )
+    
+    # Mapeamento dos dados
+    transformed_data_frame = ApplyMapping.apply(
+        frame=data_frame,
+        mappings=[
+            ("artist", "string", "artist", "string"),
+            ("track", "string", "track", "string"),
+            ("track_pop", "bigint", "track_pop", "bigint"),
+            ("duration_ms", "bigint", "duration_ms", "bigint"),
+            ("album_nm", "string", "album_nm", "string"),
+            ("album_dt", "string", "album_dt", "string")
+        ],
+    )
+    
+    # Converte de DynamicFrame para DataFrame
+    data_frame_df = transformed_data_frame.toDF()
+    
+    # Envio do DataFrame em parquet ao S3
+    parquet_file_name = table_name + "_refined"
+    data_frame_df.write.parquet("s3://spotify-dataops-refined/" + parquet_file_name, mode="overwrite")
+
+# Chama a função de transformação das tabelas
+transform_csv_to_parquet("spotify_data", "spotifypopularsongs")
+transform_csv_to_parquet("spotify_data", "spotifytopplayed")
+
+# Commit do ETL Job
+job.commit()
+```
+
 ### AWS Athena
 
-Com a criação dos data catalog, pude inbegrar o Athena na infraestrutura, para possibilitar a escrita de SQL queries.
+Com a criação dos DataCatalogs eu pude integrar o Athena a infraestrutura, possibilitando a escrita de SQL queries.
 
 ### AWS QuickSight
 
-
+<h4 align="left"> 
+:construction: QUICKSIGHT EM PLANEJAMENTO/ESTUDO :construction:
+</h4>
 
 ## Instrução para execução
 
@@ -150,13 +206,15 @@ python -m venv <nome-do-ambiente>
 Esse comando irá criar o nosso ambiente na versão mais recente do python instalado na máquina local.
 
 Com o ambiente criado, deveremos ter o seguinte parentesco do diretório:
-´´´
--> /[pasta-projeto]/
-	-> main.py (os outros .py são dedicados para utilização na AWS)
-	-> requirements.txt
-	-> <nome-da-venv>
-	-> <csvs-gerados>
-´´´
+
+```
+> /[pasta-projeto]/
+	> main.py (os outros .py são dedicados para utilização na AWS)
+	> requirements.txt
+	> <nome-da-venv>
+	> <csvs-gerados>
+```
+
 Tendo isso, ou ao menos algo similar, precisamos ainda das bibliotecas. Para facilitar a instalação delas, criei um .txt utilizando o pip freeze contendo todas as libs da minha venv.
 
 Para instalar será necessário estar no diretório do projeto, abrir o cmd e ativar o ambiente virtual, da seguinte maneira:
