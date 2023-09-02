@@ -16,7 +16,7 @@ PySpotify Data Engineering Project
 
 - Infraestrutura Cloud
 
-- Instrução para Execução
+- Instruções para Execução
 
 - Planejamento do Projeto e Autoria
 
@@ -61,7 +61,7 @@ Esse projeto foi extremamente importante, para ter a motivação para realizar m
 
 É importante ressaltar, antes de apresentar as decisões na arquitetura, que não fazia parte de meu objetivo desenvolver uma infraestrutura "otimizada", como disse anteriormente, o projeto foi para aprender outras ferramentas/serviços que podem e são bastante utilizados em infraestruturas cloud voltada para dados (data driven architecture).
 
-## Serviços utilizados para a extração dos dados:
+## Infraestrutura Cloud:
 
 ### AWS Simple Storage Service (S3)
 
@@ -191,7 +191,7 @@ Com a criação dos DataCatalogs eu pude integrar o Athena a infraestrutura, pos
 :construction: QUICKSIGHT EM PLANEJAMENTO/ESTUDO :construction:
 </h4>
 
-## Instrução para execução
+## Instruções para execução
 
 Para realizar a execução local desse código, é bem simples, primeiramente será necessário realizar a criação de um ambiente virtual python. Para isso existem diversas maneiras, porém, eu diria que a melhor seria utilizando o poetry.
 
