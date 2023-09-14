@@ -35,7 +35,7 @@ PySpotify Data Engineering Project
 
 The main idea behind this project is to work with and integrate various AWS services that I didn't have experience with, as well as to enhance my skills and knowledge in developing and maintaining ETL pipelines in the cloud.
 
-However, that's not the sole objective. I aim to have the complete process, from designing the infrastructure architecture, its development, data extraction, processing, transformation, loading, automation/scheduling, and, most importantly for the project's success, presenting the data. In other words, turning the data into useful information with visualization using either PowerBI or AWS QuickSight.
+However, that's not the sole objective. I aim to have the complete process, from designing the infrastructure architecture, its development, data extraction, processing, transformation, loading, and, most importantly for the project's success, the automation/scheduling of the previous processes.
 
 ### What's the reason for choosing to use the Spotify API?
 
@@ -75,15 +75,15 @@ It's important to emphasize, before presenting the architectural decisions, that
 
 ### AWS Simple Storage Service (S3)
 
-One of the most widely used AWS services, and because it's more than just storage, it's also used as a bridge between services, and that's exactly how I use it here. In addition to storing the Python packages that the Lambda spotipy layer uses, the final result of the lambda script execution is to send the generated .csv to S3 (spotify-dataops-raw) (STOPPED HERE, CONTINUE LATER)
+One of the most widely used AWS services, and because it's more than just storage, it's also used as a bridge between services, and that's exactly how I use it here. In addition to storing the Python packages that the Lambda spotipy layer uses, the final result of the lambda script execution is to send the generated .csv to S3 (spotify-dataops-raw), such result also occurs with the Glue ETL Job, the .parquet files the process creates are sent to an s3 bucket (spotify-dataops-refined), so that a catalog and tables may be created.
 
 ### AWS IAM
 
-Without a doubt, a crucial service, not only in terms of data protection by limiting access but also crucial for integrating services. We can assign roles or permissions to various AWS services to enable them to interact with each other. An example of this interaction is the spotify-s3 permission role, which allows services to (CORRECT!!!)
+Without a doubt, a crucial service, not only in terms of data protection by limiting access but also crucial for integrating services. We can assign roles or permissions to various AWS services to enable them to interact with each other. An example of this interaction is the spotify_secrets_manager permission role, which allows the lambda to utilize the client_id and client_secret variables spotipy lib requires to establish a successful connection with the spotify api.
 
 ### AWS Lambda
 
-For lightweight and quick scripts, Lambda is a much better choice than EC2. It's the perfect choice for quick web scraping or modest data collection (not recommended for big data collections). In the project's case, the execution time is around 8 minutes, well below the 15-minute limit. However, the problem was dealing with the script's size, which, due to the various libraries used, was 297MB (Remember that Lambda has a 250MB limit). Initially, I tried to use Pandas in a layer, but the layer's limit made this impossible. After some research, I found a permanent solution, which was to abandon the Lambda with Python 3.11 and use version 3.7 in the Lambda, which has an AWS layer with Pandas and Numpy included. With this change, I was able to add pyspotify in a second layer and only the Python script and a .cache file from spotipy in the root of the Lambda.
+For lightweight and quick scripts, Lambda is a much better choice than EC2. It's the perfect choice for a quick web scraping or a modest data collection. In the project's case, the execution time is around 8 minutes, well below the 15-minute limit. However, the problem was dealing with the script's size, which, due to the various libraries used, was 297MB (Remember that Lambda has a 250MB limit). Initially, I tried to use Pandas in a layer, but the layer's limit made this impossible. After some research, I found a permanent solution, which was to abandon the Lambda with Python 3.11 and use version 3.7 in the Lambda, which has an AWS layer with Pandas and Numpy included. With this change, I was able to add pyspotify in a second layer and only the Python script and a .cache file from spotipy in the root of the Lambda.
 
 ### AWS Secrets Manager
 
@@ -192,12 +192,6 @@ job.commit()
 ### AWS Athena
 
 With the creation of the DataCatalogs, I was able to integrate Athena into the infrastructure, enabling the writing of SQL queries.
-
-### AWS QuickSight
-
-<h4 align="left"> 
-:construction: QUICKSIGHT UNDER PLANNING/STUDY :construction:
-</h4>
 
 ## Execution Instructions
 
