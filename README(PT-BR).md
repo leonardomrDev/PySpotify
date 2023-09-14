@@ -23,9 +23,9 @@ PySpotify Data Engineering Project
 
 ## Descrição e Objetivo
 
-A idéia por trás principal desse projeto é; trabalhar com, e realizar a integração de diversos serviços da AWS que eu não possuia experiência, além de aumentar minha experiência e conhecimentos no desenvolvimento e manutenção de pipelines de ETL em cloud.
+A ideia por trás principal desse projeto é; trabalhar com, e realizar a integração de diversos serviços da AWS que eu não possuia experiência, além de aumentar minha experiência e conhecimentos no desenvolvimento e manutenção de pipelines de ETL em cloud.
 
-Mas não é o único objetivo. Quero ter o processo completo, desde a arquitetura da infraestrutura, o desenvolvimento da mesma, a extração de dados, tratamento, transformação, carregamento, automatização/agendamento, e o mais importante para o projeto ser um sucesso; a apresentação dos dados, ou seja, transformar os dados em informação útil com uma visualização utilizando o PowerBI ou o AWS Quicksight.
+Mas não é o único objetivo. Quero ter o processo completo, desde a arquitetura da infraestrutura, o desenvolvimento da mesma, a extração de dados, tratamento, transformação, carregamento, e o passo crucial, a automatização/agendamento.
 
 **Qual o motivo da escolha de utilizar a API do Spotify?**
 
@@ -65,15 +65,15 @@ Esse projeto foi extremamente importante, para ter a motivação para realizar m
 
 ### AWS Simple Storage Service (S3)
 
-Um dos serviços mais utilizado da AWS, e por ser mais do que um simples armazenamento, ele também é utilizado como uma ponte entre os serviços, e assim é precisamente como eu o utilizo aqui. Além de armazenar os python packages que o layer spotipy da Lambda utiliza, o resultado final da execução do script lambda é realizar o envio do .csv gerado para o s3 (spotify-dataops-raw) (PAREI AQUI, CONTINUAR DEPOIS)
+Um dos serviços mais utilizado da AWS, e por ser mais do que um simples armazenamento, ele também é utilizado como uma ponte entre os serviços, e assim é precisamente como eu o utilizo aqui. Além de armazenar os python packages que o layer spotipy da Lambda utiliza, o resultado final da execução do script lambda é realizar o envio do .csv gerado para o s3 (spotify-dataops-raw), tal como, o resultado final do Glue ETL é enviar os .parquet para o s3 spotify-dataops-refined
 
 ### AWS IAM
 
-Sem dúvidas o serviço crucial, não apenas no quesito de proteção dos dados ao limitar acessos, mas também ele é crucial para podermos integrar serviços, onde podemos atribuir roles ou permissões para serviços diversos da AWS poderem se utilizar de outros serviços, ou seja, interagirem entre si. Um exemplo dessa interação é a role de permissão spotify-s3, essa role permite os serviços a (CORRIGIR!!!)
+Sem dúvidas o serviço crucial, não apenas no quesito de proteção dos dados ao limitar acessos, mas também ele é crucial para podermos integrar serviços, onde podemos atribuir roles ou permissões para serviços diversos da AWS poderem se utilizar de outros serviços, ou seja, interagirem entre si. Um exemplo dessa interação é a role de permissão spotify-secretsmanager-lambda, essa role permite a lambda a ter acesso ao secret da API.
 
 ### AWS Lambda
 
-Para scripts leves e rápidos, o serviço lambda é uma escolha muito superior ao ec2, é a escolha perfeita para um rápido webscrapping ou uma modesta coleta de dados (não indicado para coletas de bigdata), no caso do projeto, o tempo de execução fica em torno de 8 minutos, bem abaixo do limite de 15 minutos. Porém, o problema foi lidar com o tamanho do script, que por conta das diversas bibliotecas utilizadas ficava em 297MB (Lembrando que a lambda possui um limite de 250MB), primeiramente tentei utilizar o pandas em uma camada, porém, o limite das layers não tornava isso possível, e após um estudo, encontrei a solução permanente, que foi abandonar a lambda com o python 3.11 e utilizar a versão 3.7 na lambda, que possui uma layer aws com o pandas e numpy inclusos. Com essa alteração pude adicionar o pyspotify em uma segunda layer e apenas o script python e um arquivo .cache do spotipy na raiz da lambda.
+Para scripts leves e rápidos, o serviço lambda é uma escolha muito superior ao ec2, é a escolha perfeita para um rápido webscrapping ou uma modesta coleta de dados, no caso do projeto, o tempo de execução fica em torno de 8 minutos, bem abaixo do limite de 15 minutos. Porém, o problema foi lidar com o tamanho do script, que por conta das diversas bibliotecas utilizadas ficava em 297MB (Lembrando que a lambda possui um limite de 250MB), primeiramente tentei utilizar o pandas em uma camada, porém, o limite das layers não tornava isso possível, e após um estudo, encontrei a solução permanente, que foi abandonar a lambda com o python 3.11 e utilizar a versão 3.7 na lambda, que possui uma layer aws com o pandas e numpy inclusos. Com essa alteração pude adicionar o pyspotify em uma segunda layer e apenas o script python e um arquivo .cache do spotipy na raiz da lambda.
 
 ### AWS Secrets Manager
 
@@ -184,12 +184,6 @@ job.commit()
 ### AWS Athena
 
 Com a criação dos DataCatalogs eu pude integrar o Athena a infraestrutura, possibilitando a escrita de SQL queries.
-
-### AWS QuickSight
-
-<h4 align="left"> 
-:construction: QUICKSIGHT EM PLANEJAMENTO/ESTUDO :construction:
-</h4>
 
 ## Instruções para execução
 
